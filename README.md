@@ -1,5 +1,5 @@
 # Dump-truck-recognition
-在以下网站下载Python程序：
+1.在以下网站下载Python程序：
 https://www.python.org/downloads/windows/
 这里选择3.6.3版本
 
