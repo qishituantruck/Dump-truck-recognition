@@ -1,10 +1,19 @@
 # Dump-truck-recognition
+
+
+### ＧＰＵ加速配置
+＋　ＣＵＤＡ　９．０
+＋ｃｕｄｎｎ　７．０
+
+
 ### Python 依赖
 + Python3.6
 + Tensorflow(>1.1.x)
 + Numpy
 + OpenCV(>3.0)
 + Darkflow
+
+
 ### DarkFlow 安装
 
 DarkFlow 地址：https://github.com/thtrieu/darkflow
