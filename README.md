@@ -11,8 +11,6 @@
 ### Python 依赖
 
 + Python3.6
-+ Tensorflow(>1.1.x)
++ Tensorflow1.6
 + Numpy
 + OpenCV(>3.0)
-+ Darkflow
-
