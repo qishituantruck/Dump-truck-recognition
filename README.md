@@ -1,10 +1,10 @@
 # Dump-truck-recognition
 
 
-###GPU加速配置
+### GPU加速配置
 
-+　cuda 9.0
-+　cudnn 7.0
++ cuda 9.0
++ cudnn 7.0
 
 
 
