@@ -1,12 +1,15 @@
 # Dump-truck-recognition
 
 
-### ＧＰＵ加速配置
-＋　ＣＵＤＡ　９．０
-＋ｃｕｄｎｎ　７．０
+###GPU加速配置
+
++　cuda 9.0
++　cudnn 7.0
+
 
 
 ### Python 依赖
+
 + Python3.6
 + Tensorflow(>1.1.x)
 + Numpy
