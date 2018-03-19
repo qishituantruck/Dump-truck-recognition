@@ -8,7 +8,7 @@ def getCarLoc(result):
     carnum=0
     carLocList=[]
     if len(result)==0:
-        return  carLocList
+        return  0,carLocList
     for item in result:
         if item["label"]=="car":
             carnum+=1

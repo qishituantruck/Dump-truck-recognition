@@ -48,16 +48,3 @@ def recognizeOne(src):
     # cv2.imshow("x_temp",x_tempx)
     # cv2.waitKey(0)
     return fastdecode(y_pred)
-#
-#
-# import os
-#
-# path = "/Users/yujinke/PycharmProjects/HyperLPR_Python_web/cache/finemapping"
-# for filename in os.listdir(path):
-#     if filename.endswith(".png") or filename.endswith(".jpg") or filename.endswith(".bmp"):
-#         x = os.path.join(path,filename)
-#         recognizeOne(x)
-#         # print time.time() - t0
-#
-#         # cv2.imshow("x",x)
-#         # cv2.waitKey()

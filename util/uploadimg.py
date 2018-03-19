@@ -5,7 +5,7 @@ import os.path
 def ftp_upload(filename, save_filename):
     ftp = FTP()
     ftp.set_debuglevel(0)                   # 打开调试级别2，显示详细信息;0为关闭调试信息
-    ftp.connect('10.6.12.208', 2121, 60)  # FTP主机 端口 超时时间
+    ftp.connect('172.22.114.17', 2121, 60)  # FTP主机 端口 超时时间
     ftp.login('ftpadmin', 'Che19940624')           # 登录，如果匿名登录则用空串代替即可
 
     remote_dir = save_filename.split("/")

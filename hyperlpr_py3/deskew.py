@@ -14,18 +14,6 @@ def angle(x,y):
     return int(math.atan2(float(y),float(x))*180.0/3.1415)
 
 
-def h_rot(src, angle, scale=1.0):
-    w = src.shape[1]
-    h = src.shape[0]
-    rangle = np.deg2rad(angle)
-    nw = (abs(np.sin(rangle)*h) + abs(np.cos(rangle)*w))*scale
-    nh = (abs(np.cos(rangle)*h) + abs(np.sin(rangle)*w))*scale
-    rot_mat = cv2.getRotationMatrix2D((nw*0.5, nh*0.5), angle, scale)
-    rot_move = np.dot(rot_mat, np.array([(nw-w)*0.5, (nh-h)*0.5,0]))
-    rot_mat[0,2] += rot_move[0]
-    rot_mat[1,2] += rot_move[1]
-    return cv2.warpAffine(src, rot_mat, (int(math.ceil(nw)), int(math.ceil(nh))), flags=cv2.INTER_LANCZOS4)
-    pass
 
 
 def v_rot(img, angel, shape, max_angel):
