@@ -1,11 +1,11 @@
 from . import yolo
 from . import yolov2
-from . import vanilla
+# from . import vanilla
 from os.path import basename
 
 class framework(object):
-    constructor = vanilla.constructor
-    loss = vanilla.train.loss
+    # constructor = vanilla.constructor
+    # loss = vanilla.train.loss
     
     def __init__(self, meta, FLAGS):
         model = basename(meta['model'])
@@ -22,11 +22,11 @@ class YOLO(framework):
     parse = yolo.data.parse
     shuffle = yolo.data.shuffle
     preprocess = yolo.predict.preprocess
-    postprocess = yolo.predict.postprocess
-    loss = yolo.train.loss
-    is_inp = yolo.misc.is_inp
-    profile = yolo.misc.profile
-    _batch = yolo.data._batch
+    # postprocess = yolo.predict.postprocess
+    # loss = yolo.train.loss
+    # is_inp = yolo.misc.is_inp
+    # profile = yolo.misc.profile
+    # _batch = yolo.data._batch
     resize_input = yolo.predict.resize_input
     findboxes = yolo.predict.findboxes
     process_box = yolo.predict.process_box
@@ -36,10 +36,10 @@ class YOLOv2(framework):
     parse = yolo.data.parse
     shuffle = yolov2.data.shuffle
     preprocess = yolo.predict.preprocess
-    loss = yolov2.train.loss
-    is_inp = yolo.misc.is_inp
-    postprocess = yolov2.predict.postprocess
-    _batch = yolov2.data._batch
+    # loss = yolov2.train.loss
+    # is_inp = yolo.misc.is_inp
+    # postprocess = yolov2.predict.postprocess
+    # _batch = yolov2.data._batch
     resize_input = yolo.predict.resize_input
     findboxes = yolov2.predict.findboxes
     process_box = yolo.predict.process_box

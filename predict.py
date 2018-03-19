@@ -29,7 +29,7 @@ while (cap.isOpened()):
     ret, frame = cap.read()
     if not ret:
         break
-    cv2.imshow("capture", frame)
+
     # cv2.waitKey(0)
     if c%15==0:
         starttime=time.time()
@@ -41,20 +41,21 @@ while (cap.isOpened()):
         carnum,carLocationList=getCarLoc(result)
         if carnum>0:
             print(carnum)
-            cv2.imwrite('C:/Users/chezh/Documents/GitHub/Dump-truck-recognition/image/' + str(c) + '.jpg', frame)
+            # cv2.imwrite('C:/Users/chezh/Documents/GitHub/Dump-truck-recognition/image/' + str(c) + '.jpg', frame)
             for item in carLocationList:
                 cv2.rectangle(frame, item["topleft"], item["bottomright"], (55, 255, 155), 5)
                 #上传文件到服务器
-
+                cv2.imshow("capture", frame)
                 # cv2.imwrite('C:/Users/chezh/PycharmProjects/opencv_project/image/' + str(c) + '.jpg', frame)
-                cv2.imwrite('C:/Users/chezh/Documents/GitHub/Dump-truck-recognition/image/' + str(c) + '.jpg', frame)
+                # cv2.imwrite('C:/Users/chezh/Documents/GitHub/Dump-truck-recognition/image/' + str(c) + '.jpg', frame)
 
-        print(getCarLoc(result))
+        # print(getCarLoc(result))
+    cv2.imshow("capture", frame)
     c = c + 1
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-cv2.waitKey(0)
+
 
 cap.release()
 cv2.destroyAllWindows()

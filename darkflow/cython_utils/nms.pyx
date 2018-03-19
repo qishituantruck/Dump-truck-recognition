@@ -80,7 +80,7 @@ cdef NMS(float[:, ::1] final_probs , float[:, ::1] final_bbox):
                         final_probs[index, class_loop] =0
                         break
                     final_probs[index2,class_loop]=0
-            
+
             if index not in indices:
                 bb=BoundBox(class_length)
                 bb.x = final_bbox[index, 0]

@@ -24,8 +24,8 @@ class connected(BaseOp):
 	def forward(self):
 		self.out = tf.nn.xw_plus_b(
 			self.inp.out,
-			self.lay.w['weights'], 
-			self.lay.w['biases'], 
+			self.lay.w['weights'],
+			self.lay.w['biases'],
 			name = self.scope)
 
 	def speak(self):
@@ -73,7 +73,7 @@ class softmax(BaseOp):
 class avgpool(BaseOp):
 	def forward(self):
 		self.out = tf.reduce_mean(
-			self.inp.out, [1, 2], 
+			self.inp.out, [1, 2],
 			name = self.scope
 		)
 
@@ -85,8 +85,8 @@ class dropout(BaseOp):
 		if self.lay.h['pdrop'] is None:
 			self.lay.h['pdrop'] = 1.0
 		self.out = tf.nn.dropout(
-			self.inp.out, 
-			self.lay.h['pdrop'], 
+			self.inp.out,
+			self.lay.h['pdrop'],
 			name = self.scope
 		)
 
@@ -105,11 +105,11 @@ class maxpool(BaseOp):
 	def forward(self):
 		self.out = tf.nn.max_pool(
 			self.inp.out, padding = 'SAME',
-	        ksize = [1] + [self.lay.ksize]*2 + [1], 
+	        ksize = [1] + [self.lay.ksize]*2 + [1],
 	        strides = [1] + [self.lay.stride]*2 + [1],
 	        name = self.scope
 	    )
-	
+
 	def speak(self):
 		l = self.lay
 		return 'maxp {}x{}p{}_{}'.format(
@@ -119,8 +119,8 @@ class maxpool(BaseOp):
 class leaky(BaseOp):
 	def forward(self):
 		self.out = tf.maximum(
-			.1 * self.inp.out, 
-			self.inp.out, 
+			.1 * self.inp.out,
+			self.inp.out,
 			name = self.scope
 		)
 

@@ -74,19 +74,31 @@ def train(self):
     if ckpt: _save_ckpt(self, *args)
 
 def return_predict(self, im):
-    assert isinstance(im, np.ndarray), \
-				'Image is not a np.ndarray'
+    assert isinstance(im, np.ndarray), 'Image is not a np.ndarray'
     h, w, _ = im.shape
+
     im = self.framework.resize_input(im)
+
     this_inp = np.expand_dims(im, 0)
+
+
     feed_dict = {self.inp : this_inp}
 
     out = self.sess.run(self.out, feed_dict)[0]
+
     boxes = self.framework.findboxes(out)
+
+
     threshold = self.FLAGS.threshold
+
+
     boxesInfo = list()
+
     for box in boxes:
+
+
         tmpBox = self.framework.process_box(box, h, w, threshold)
+
         if tmpBox is None:
             continue
         boxesInfo.append({
@@ -101,48 +113,48 @@ def return_predict(self, im):
         })
     return boxesInfo
 
-import math
+# import math
 
-def predict(self):
-    inp_path = self.FLAGS.imgdir
-    all_inps = os.listdir(inp_path)
-    all_inps = [i for i in all_inps if self.framework.is_inp(i)]
-    if not all_inps:
-        msg = 'Failed to find any images in {} .'
-        exit('Error: {}'.format(msg.format(inp_path)))
-
-    batch = min(self.FLAGS.batch, len(all_inps))
-
-    # predict in batches
-    n_batch = int(math.ceil(len(all_inps) / batch))
-    for j in range(n_batch):
-        from_idx = j * batch
-        to_idx = min(from_idx + batch, len(all_inps))
-
-        # collect images input in the batch
-        this_batch = all_inps[from_idx:to_idx]
-        inp_feed = pool.map(lambda inp: (
-            np.expand_dims(self.framework.preprocess(
-                os.path.join(inp_path, inp)), 0)), this_batch)
-
-        # Feed to the net
-        feed_dict = {self.inp : np.concatenate(inp_feed, 0)}    
-        self.say('Forwarding {} inputs ...'.format(len(inp_feed)))
-        start = time.time()
-        out = self.sess.run(self.out, feed_dict)
-        stop = time.time(); last = stop - start
-        self.say('Total time = {}s / {} inps = {} ips'.format(
-            last, len(inp_feed), len(inp_feed) / last))
-
-        # Post processing
-        self.say('Post processing {} inputs ...'.format(len(inp_feed)))
-        start = time.time()
-        pool.map(lambda p: (lambda i, prediction:
-            self.framework.postprocess(
-               prediction, os.path.join(inp_path, this_batch[i])))(*p),
-            enumerate(out))
-        stop = time.time(); last = stop - start
-
-        # Timing
-        self.say('Total time = {}s / {} inps = {} ips'.format(
-            last, len(inp_feed), len(inp_feed) / last))
+# def predict(self):
+#     inp_path = self.FLAGS.imgdir
+#     all_inps = os.listdir(inp_path)
+#     all_inps = [i for i in all_inps if self.framework.is_inp(i)]
+#     if not all_inps:
+#         msg = 'Failed to find any images in {} .'
+#         exit('Error: {}'.format(msg.format(inp_path)))
+#
+#     batch = min(self.FLAGS.batch, len(all_inps))
+#
+#     # predict in batches
+#     n_batch = int(math.ceil(len(all_inps) / batch))
+#     for j in range(n_batch):
+#         from_idx = j * batch
+#         to_idx = min(from_idx + batch, len(all_inps))
+#
+#         # collect images input in the batch
+#         this_batch = all_inps[from_idx:to_idx]
+#         inp_feed = pool.map(lambda inp: (
+#             np.expand_dims(self.framework.preprocess(
+#                 os.path.join(inp_path, inp)), 0)), this_batch)
+#
+#         # Feed to the net
+#         feed_dict = {self.inp : np.concatenate(inp_feed, 0)}
+#         self.say('Forwarding {} inputs ...'.format(len(inp_feed)))
+#         start = time.time()
+#         out = self.sess.run(self.out, feed_dict)
+#         stop = time.time(); last = stop - start
+#         self.say('Total time = {}s / {} inps = {} ips'.format(
+#             last, len(inp_feed), len(inp_feed) / last))
+#
+#         # Post processing
+#         self.say('Post processing {} inputs ...'.format(len(inp_feed)))
+#         start = time.time()
+#         pool.map(lambda p: (lambda i, prediction:
+#             self.framework.postprocess(
+#                prediction, os.path.join(inp_path, this_batch[i])))(*p),
+#             enumerate(out))
+#         stop = time.time(); last = stop - start
+#
+#         # Timing
+#         self.say('Total time = {}s / {} inps = {} ips'.format(
+#             last, len(inp_feed), len(inp_feed) / last))

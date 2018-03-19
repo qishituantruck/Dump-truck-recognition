@@ -82,38 +82,35 @@ def splitImage(box):
 
     return x1,x2,y1,y2
 
-
-
-
 def location(file):
     img = cv2.imread(file)
     # print(img.shape)
     # 转换成hsv模式图片
     hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     cv2.imshow("hsv_img", hsv_img)
-    cv2.waitKey(0)
+
     # 找到hsv图片下的所有符合蓝底颜色区间的像素点，转换成二值化图像
     mask = cv2.inRange(hsv_img, lower_blue, higher_blue)
     res = cv2.bitwise_and(img, img, mask=mask)
     cv2.imshow("res", res)
-    cv2.waitKey(0)
+
 
     # 灰度化
     gray = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
     cv2.imshow("gray", gray)
-    cv2.waitKey(0)
+
     # 高斯模糊：车牌识别中利用高斯模糊将图片平滑化，去除干扰的噪声对后续图像处理的影响
     gaussian = cv2.GaussianBlur(gray, (3, 3), 0, 0, cv2.BORDER_DEFAULT)
     cv2.imshow("gaussian", gaussian)
-    cv2.waitKey(0)
+
     #sobel算子：车牌定位的核心算法，水平方向上的边缘检测，检测出车牌区域
     sobel = cv2.convertScaleAbs(cv2.Sobel(gaussian, cv2.CV_16S, 1, 0, ksize=3))
     cv2.imshow("sobel", sobel)
-    cv2.waitKey(0)
+
     #进一步对图像进行处理，强化目标区域，弱化背景。
     ret, binary = cv2.threshold(sobel, 150, 255, cv2.THRESH_BINARY)
     cv2.imshow("binary", binary)
-    cv2.waitKey(0)
+
 
 
 
@@ -124,7 +121,7 @@ def location(file):
     # eroded = cv2.erode(closed, None, iterations=1)
     # dilation = cv2.dilate(eroded, None, iterations=1)
     cv2.imshow("closed", closed)
-    cv2.waitKey(0)
+
 
 
     # 查找并筛选符合条件的矩形区域
@@ -138,18 +135,19 @@ def location(file):
     x1,x2,y1,y2=splitImage(region)
     img_org2 = img.copy()
     img_plate = img_org2[y1:y2, x1:x2]
-    cv2.imshow('number plate', img_plate)
-    cv2.imwrite('number_plate.jpg', img_plate)
+
+
+    return img_plate
 
 
 
-
-    cv2.imshow("img", img)
-    cv2.waitKey(0)
 
 
 if __name__ == '__main__':
-    path = "car_id"
 
-    file = "C:/Users/chezh/Documents/GitHub/Dump-truck-recognition/image/5.jpg"
-    location(file)
+
+    file = "./image/tests.jpg"
+    img_plate=location(file)
+    cv2.imshow("plate",img_plate)
+    cv2.imwrite("./plateimages/test.jpg",img_plate)
+    cv2.waitKey(0)

@@ -1,4 +1,3 @@
-from . import train
 from . import predict
 from . import data
 from . import misc

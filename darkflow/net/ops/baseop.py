@@ -97,4 +97,3 @@ class BaseOp(object):
             self.act, self.train_msg, 
             self.speak(), _shape(self.out))
     
-    def speak(self): pass

@@ -52,16 +52,16 @@ cdef void _softmax_c(float* x, int classes):
 @cython.wraparound(False)  # turn off negative index wrapping for entire function
 def box_constructor(meta,np.ndarray[float,ndim=3] net_out_in):
     cdef:
-        np.intp_t H, W, _, C, B, row, col, box_loop, class_loop
+        np.intp_t H, W, _, C, B, row, col, box_loop, class_loop  #
         np.intp_t row1, col1, box_loop1,index,index2
-        float  threshold = meta['thresh']
+        float  threshold = meta['thresh']    #0.2
         float tempc,arr_max=0,sum=0
-        double[:] anchors = np.asarray(meta['anchors'])
+        double[:] anchors = np.asarray(meta['anchors'])  #[1.08, 1.19, 3.42, 4.41, 6.63, 11.38, 9.42, 5.11, 16.62, 10.52]
         list boxes = list()
 
-    H, W, _ = meta['out_size']
-    C = meta['classes']
-    B = meta['num']
+    H, W, _ = meta['out_size']      #13,13,30
+    C = meta['classes']        #1
+    B = meta['num']           #5
     
     cdef:
         float[:, :, :, ::1] net_out = net_out_in.reshape([H, W, B, net_out_in.shape[2]/B])
