@@ -1,32 +1,10 @@
 #coding=utf-8
 from . import detect
 from . import  finemapping  as  fm
-
-
 import cv2
-
 import time
-import numpy as np
-
-from PIL import ImageFont
-from PIL import Image
-from PIL import ImageDraw
-import json
-
-import sys
 from . import typeDistinguish as td
-import imp
-
-
-
-
-
 from . import e2e
-
-
-
-
-
 from . import finemapping_vertical as fv
 
 def RecognizePlateDict(image):
@@ -45,6 +23,9 @@ def RecognizePlateDict(image):
         t1 = time.time()
 
         ptype = td.SimplePredict(plate)
+
+
+
         if ptype>0 and ptype<4:
             plate = cv2.bitwise_not(plate)
         # demo = verticalEdgeDetection(plate)
@@ -71,8 +52,6 @@ def RecognizePlateDict(image):
             res_json["w"] = int(rect[2])
             res_json["h"] = int(rect[3])
             jsons.append(res_json)
-
-
     return jsons
 
 

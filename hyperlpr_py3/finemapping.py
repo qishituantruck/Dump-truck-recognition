@@ -1,10 +1,6 @@
 #coding=utf-8
 import cv2
 import numpy as np
-
-
-from . import niblack_thresholding as nt
-
 from . import deskew
 
 def fitLine_ransac(pts,zero_add = 0 ):

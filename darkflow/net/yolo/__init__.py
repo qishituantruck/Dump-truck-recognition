@@ -16,6 +16,7 @@ def constructor(self, meta, FLAGS):
 		g = 2 - (indx % base2) % base
 		return (b * 127, r * 127, g * 127)
 	if 'labels' not in meta:
+		# meta['labels'] = ["car"]
 		misc.labels(meta, FLAGS) #We're not loading from a .pb so we do need to load the labels
 	assert len(meta['labels']) == meta['classes'], (
 		'labels.txt and {} indicate' + ' '

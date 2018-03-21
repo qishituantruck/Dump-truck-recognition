@@ -1,11 +1,6 @@
 #coding=utf-8
-from keras import backend as K
-from keras.models import load_model
-from keras.layers import *
-import numpy as np
-import random
-import string
 
+import numpy as np
 import cv2
 from . import e2emodel as model
 chars = ["京", "沪", "津", "渝", "冀", "晋", "蒙", "辽", "吉", "黑", "苏", "浙", "皖", "闽", "赣", "鲁", "豫", "鄂", "湘", "粤", "桂",

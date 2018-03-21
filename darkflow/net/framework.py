@@ -1,11 +1,8 @@
 from . import yolo
-from . import yolov2
-# from . import vanilla
+# from . import yolov2
 from os.path import basename
-
+from . import yolov2
 class framework(object):
-    # constructor = vanilla.constructor
-    # loss = vanilla.train.loss
     
     def __init__(self, meta, FLAGS):
         model = basename(meta['model'])
@@ -18,23 +15,24 @@ class framework(object):
         return True
 
 class YOLO(framework):
-    constructor = yolo.constructor
-    parse = yolo.data.parse
-    shuffle = yolo.data.shuffle
-    preprocess = yolo.predict.preprocess
+    pass
+    # constructor = yolo.constructor
+    # parse = yolo.data.parse
+    # shuffle = yolo.data.shuffle
+    # preprocess = yolo.predict.preprocess
     # postprocess = yolo.predict.postprocess
     # loss = yolo.train.loss
     # is_inp = yolo.misc.is_inp
     # profile = yolo.misc.profile
     # _batch = yolo.data._batch
-    resize_input = yolo.predict.resize_input
-    findboxes = yolo.predict.findboxes
-    process_box = yolo.predict.process_box
+    # resize_input = yolo.predict.resize_input
+    # findboxes = yolo.predict.findboxes
+    # process_box = yolo.predict.process_box
 
 class YOLOv2(framework):
     constructor = yolo.constructor
-    parse = yolo.data.parse
-    shuffle = yolov2.data.shuffle
+    # parse = yolo.data.parse
+    # shuffle = yolov2.data.shuffle
     preprocess = yolo.predict.preprocess
     # loss = yolov2.train.loss
     # is_inp = yolo.misc.is_inp

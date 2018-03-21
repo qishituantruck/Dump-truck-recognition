@@ -77,25 +77,7 @@ class TFNet(object):
 		self.say('Finished in {}s\n'.format(
 			time.time() - start))
 	
-	# def build_from_pb(self):
-	# 	with tf.gfile.FastGFile(self.FLAGS.pbLoad, "rb") as f:
-	# 		graph_def = tf.GraphDef()
-	# 		graph_def.ParseFromString(f.read())
-	#
-	# 	tf.import_graph_def(
-	# 		graph_def,
-	# 		name=""
-	# 	)
-	# 	with open(self.FLAGS.metaLoad, 'r') as fp:
-	# 		self.meta = json.load(fp)
-	# 	self.framework = create_framework(self.meta, self.FLAGS)
-    #
-	# 	# Placeholders
-	# 	self.inp = tf.get_default_graph().get_tensor_by_name('input:0')
-	# 	self.feed = dict() # other placeholders
-	# 	self.out = tf.get_default_graph().get_tensor_by_name('output:0')
-	#
-	# 	self.setup_meta_ops()
+
 	
 	def build_forward(self):
 		verbalise = self.FLAGS.verbalise

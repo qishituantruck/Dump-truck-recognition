@@ -10,7 +10,7 @@ from util.uploadimg import ftp_upload
 
 
 if __name__=="__main__":
-    path = "C:/Users/chezh/Documents/GitHub/Dump-truck-recognition/image/10.jpg"
+    path = "./image/uuu.jpg"
     image=cv2.imread(path)
     ftp_upload(path, "test.jpg")
     result=pipline.RecognizePlateDict(image)
