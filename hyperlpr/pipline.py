@@ -2,7 +2,6 @@
 from . import detect
 from . import  finemapping  as  fm
 import cv2
-import time
 from . import typeDistinguish as td
 from . import e2e
 from . import finemapping_vertical as fv
@@ -20,7 +19,7 @@ def RecognizePlateDict(image):
         # print "车牌类型:",ptype
         # plate = cv2.cvtColor(plate, cv2.COLOR_RGB2GRAY)
         plate  =cv2.resize(plate,(136,int(36*2.5)))
-        t1 = time.time()
+
 
         ptype = td.SimplePredict(plate)
 
@@ -40,7 +39,7 @@ def RecognizePlateDict(image):
         # cv2.imwrite("./"+str(j)+".jpg",image_gray)
         # image_gray = horizontalSegmentation(image_gray)
 
-        t2 = time.time()
+
         res, confidence = e2e.recognizeOne(image_rgb)
         res_json = {}
         if confidence  > 0.6:

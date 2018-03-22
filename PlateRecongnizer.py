@@ -1,19 +1,17 @@
 #coding=utf-8
-
-
 import numpy
 import cv2
 import time
 import os
-from hyperlpr_py3 import pipline
+# from hyperlpr import pipline
 from util.uploadimg import ftp_upload
-
+from hyperlpr import pipline as pp
 
 if __name__=="__main__":
     path = "./image/uuu.jpg"
     image=cv2.imread(path)
-    ftp_upload(path, "test.jpg")
-    result=pipline.RecognizePlateDict(image)
+    # ftp_upload(path, "test.jpg")
+    result=pp.RecognizePlateDict(image)
     # result=recognize(path)
     print(result)
 
