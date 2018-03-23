@@ -3,20 +3,9 @@ import cv2
 import numpy as np
 import json
 import time
+from util.CarLocation import getCarLoc
 options = {"model": "cfg/tiny-yolo-voc.cfg", "load": "model/tiny-yolo-voc.weights", "threshold": 0.1,"gpu":0.7}
-def getCarLoc(result):
-    carnum=0
-    carLocList=[]
-    if len(result)==0:
-        return  0,carLocList
-    for item in result:
-        if item["label"]=="car":
-            carnum+=1
-            dict={}
-            dict["topleft"]=(item["topleft"]["x"],item["topleft"]["y"])
-            dict["bottomright"] = (item["bottomright"]["x"], item["bottomright"]["y"])
-            carLocList.append(dict)
-    return carnum,carLocList
+
 
 
 # ipaddress='http://10.6.12.241:8080/'

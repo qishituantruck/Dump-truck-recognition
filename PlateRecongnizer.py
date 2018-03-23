@@ -6,12 +6,15 @@ import os
 # from hyperlpr import pipline
 from util.uploadimg import ftp_upload
 from hyperlpr import pipline as pp
+from hyperlpr import e2emodel as model
+
 
 if __name__=="__main__":
-    path = "./image/uuu.jpg"
+    pred_model = model.construct_model("./model/ocr_plate_all_w_rnn_2.h5", )
+    path = "./image/iiii.jpg"
     image=cv2.imread(path)
     # ftp_upload(path, "test.jpg")
-    result=pp.RecognizePlateDict(image)
+    image,result=pp.RecognizePlateDict(image,pred_model)
     # result=recognize(path)
     print(result)
 

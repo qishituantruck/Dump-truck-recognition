@@ -3,7 +3,6 @@ import cv2
 import numpy as np
 
 
-
 watch_cascade = cv2.CascadeClassifier('./model/cascade.xml')
 
 
