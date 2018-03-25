@@ -4,9 +4,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow,QFileDialog
 from PyQt5.QtCore import QDir,QThread,pyqtSignal
 import sys
 import cv2
-
 import os
-
 from hyperlpr import pipline as pp
 import numpy as np
 
