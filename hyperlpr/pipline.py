@@ -6,15 +6,29 @@ from . import typeDistinguish as td
 from . import e2e
 from . import finemapping_vertical as fv
 from . import detect
+import os
+import numpy
 def RecognizePlateDict(image,model):
+
     images = detect.detectPlateRough(image,image.shape[0],top_bottom_padding_rate=0.1)
+    # cv2.imshow("images0",images[0])
     jsons = []
+    randomByteArray = bytearray(os.urandom(14688))
+    # 把数组赋值给OpenCV类型矩阵
+    flatNumpyArray = numpy.array(randomByteArray)
+
+    # 矩阵变维, 1维变维2维(灰度), 1维变为3维(彩色)
+
+    image_rgb = flatNumpyArray.reshape(36, 136, 3)
+
 
     for j,plate in enumerate(images):
         plate,rect,origin_plate =plate
-        cv2.imshow("origin_plate",origin_plate)
+
+        # cv2.imshow("origin_plate",origin_plate)
+
         # cv2.imshow("plate",plate)
-        cv2.waitKey(0)
+        # cv2.waitKey(0)
         res, confidence = e2e.recognizeOne(origin_plate,model)
         print("res",res)
         # cv2.imshow("origin_plate",origin_plate)
@@ -35,7 +49,7 @@ def RecognizePlateDict(image,model):
 
         image_rgb = fm.findContoursAndDrawBoundingBox(plate)
         image_rgb = fv.finemappingVertical(image_rgb)
-        # print(image_rgb.shape)
+        print(image_rgb.shape)
         # cv2.imshow("image_rgb",image_rgb)
         # print time.time() - t1,"校正"
         print("e2e:",e2e.recognizeOne(image_rgb,model)[0])

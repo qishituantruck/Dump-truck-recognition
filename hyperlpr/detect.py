@@ -42,8 +42,8 @@ def cropped_from_image(image,rect):
 
 
 def detectPlateRough(image_gray,resize_h = 720,en_scale =1.08 ,top_bottom_padding_rate = 0.05):
-    print(image_gray.shape)
 
+    cv2.imshow("image_gray",image_gray)
     if top_bottom_padding_rate>0.2:
         print("error:top_bottom_padding_rate > 0.2:",top_bottom_padding_rate)
         exit(1)
@@ -52,12 +52,22 @@ def detectPlateRough(image_gray,resize_h = 720,en_scale =1.08 ,top_bottom_paddin
     padding =    int(height*top_bottom_padding_rate)
     scale = image_gray.shape[1]/float(image_gray.shape[0])
 
+
+
+
+
     image = cv2.resize(image_gray, (int(scale*resize_h), resize_h))
 
+
+    cv2.imshow("resize_image", image)
     image_color_cropped = image[padding:resize_h-padding,0:image_gray.shape[1]]
 
+
+    cv2.imshow("image_color_cropped", image_color_cropped)
     image_gray = cv2.cvtColor(image_color_cropped,cv2.COLOR_RGB2GRAY)
 
+
+    cv2.imshow("image_gray", image_gray)
     watches = watch_cascade.detectMultiScale(image_gray, en_scale, 2, minSize=(36, 9),maxSize=(36*40, 9*40))
 
     cropped_images = []

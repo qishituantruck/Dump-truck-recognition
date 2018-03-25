@@ -4,11 +4,14 @@ from PyQt5.QtWidgets import QApplication, QMainWindow,QFileDialog
 from PyQt5.QtCore import QDir,QThread,pyqtSignal
 import sys
 import cv2
-import time
+
 import os
+
 from hyperlpr import pipline as pp
 import numpy as np
+
 from util.CarLocation import getCarLoc
+
 from hyperlpr import e2emodel as model
 
 class Ui_MainWindow(QMainWindow):
@@ -149,14 +152,13 @@ class Ui_MainWindow(QMainWindow):
             image = cv2.imdecode(np.fromfile(path, dtype=np.uint8), -1)
             image_rgb, res_set = pp.RecognizePlateDict(image, self.plateRecong)
 
-            print(res_set)
+            # print(res_set)
 
             show = cv2.resize(image, (640, 480))
 
             show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
             showImage = QtGui.QImage(show.data, show.shape[1], show.shape[0], QtGui.QImage.Format_RGB888)
             self.label_2.setPixmap(QtGui.QPixmap.fromImage(showImage))
-
 
             image_rgb = cv2.resize(image_rgb, (191, 51))
             plate_img = QtGui.QImage(
@@ -168,9 +170,14 @@ class Ui_MainWindow(QMainWindow):
                 QtGui.QImage.Format_RGB888)
             self.label_4.setPixmap(
                 QtGui.QPixmap.fromImage(plate_img.rgbSwapped()))
+            if len(res_set)!=0:
 
-            self.lineEdit_2.setText(res_set[0]["Name"])
+                self.lineEdit_2.setText(res_set[0]["Name"])
 
+
+
+            else:
+                self.lineEdit_2.setText("未检测到！")
             self.platenum += 1
         else:
             self.timer_plate.stop()
@@ -267,7 +274,7 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton.setText(_translate("MainWindow", "选择新的视频"))
         self.pushButton_2.setText(_translate("MainWindow", "开始检测"))
         self.label_3.setText(_translate("MainWindow", "车牌图片："))
-        self.label_4.setText(_translate("MainWindow", "TextLabel"))
+        # self.label_4.setText(_translate("MainWindow", "TextLabel"))
         self.label_5.setText(_translate("MainWindow", "识别结果："))
         self.pushButton_3.setText(_translate("MainWindow", "批量识别"))
 if __name__ == '__main__':
