@@ -7,7 +7,7 @@ import cv2
 import os
 from hyperlpr import pipline as pp
 import numpy as np
-
+import time
 from util.CarLocation import getCarLoc
 
 from hyperlpr import e2emodel as model
@@ -63,7 +63,7 @@ class Ui_MainWindow(QMainWindow):
         self.lineEdit.setObjectName("lineEdit")
         self.lineEdit.setEnabled(False)
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_2.setGeometry(QtCore.QRect(880, 170, 141, 41))
+        self.lineEdit_2.setGeometry(QtCore.QRect(880, 170, 191, 41))
 
         self.lineEdit_2.setObjectName("lineEdit_2")
 
@@ -193,6 +193,8 @@ class Ui_MainWindow(QMainWindow):
             for i in range(0, len(name_list)):
                 if name_list[i].endswith(".jpg"):
                     self.image_filename_list.append(name_list[i])
+            self.image_filename_list.sort()
+            print(self.image_filename_list)
         else:
             self.timer_plate.stop()
 
@@ -224,9 +226,10 @@ class Ui_MainWindow(QMainWindow):
                 carnum, carLocationList = getCarLoc(result)
                 if carnum > 0:
                     print(carnum)
-                    cv2.imwrite('./image/' + str(self.number) + '.jpg', self.image)
-                # for item in carLocationList:
-                #     cv2.rectangle(self.image, item["topleft"], item["bottomright"], (55, 255, 155), 5)
+                    currenttime = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(time.time()))
+                    cv2.imwrite('./image/' + currenttime + '.jpg', self.image)
+                for item in carLocationList:
+                    cv2.rectangle(self.image, item["topleft"], item["bottomright"], (55, 255, 155), 5)
                 #     # 上传文件到服务器
                 #     # cv2.imshow("capture", self.image)
                 #     cv2.imwrite('./image/' + str(self.number) + '.jpg', self.image)
