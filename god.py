@@ -5,12 +5,19 @@ from PyQt5.QtCore import QDir,QThread,pyqtSignal
 import sys
 import cv2
 import os
+from PIL import ImageFont
+from PIL import Image
+from PIL import ImageDraw
 from hyperlpr import pipline as pp
 import numpy as np
 import time
 from util.CarLocation import getCarLoc
+from util.uploadimg import ftp_upload
 
 from hyperlpr import e2emodel as model
+
+fontC = ImageFont.truetype("./Font/platech.ttf", 14, 0);
+
 
 class Ui_MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -26,13 +33,14 @@ class Ui_MainWindow(QMainWindow):
         self.tfnet=self.initYolo2()
         self.number=0
         self.platenum=0
+
     def setupUi(self, QMainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1110, 623)
+        MainWindow.resize(1302, 603)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(19, 50, 741, 511))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(9, 50, 931, 531))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -40,30 +48,32 @@ class Ui_MainWindow(QMainWindow):
         self.label_2 = QtWidgets.QLabel(self.verticalLayoutWidget)
         self.label_2.setObjectName("label_2")
         self.verticalLayout.addWidget(self.label_2)
+
+
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(20, 20, 54, 12))
         self.label.setObjectName("label")
+
+
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.label_3.setGeometry(QtCore.QRect(800, 70, 54, 12))
+        self.label_3.setGeometry(QtCore.QRect(950, 70, 54, 12))
         self.label_3.setObjectName("label_3")
 
-        #显示车牌图
+        # 显示车牌图
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
-        self.label_4.setGeometry(QtCore.QRect(880, 70, 191, 51))
+        self.label_4.setGeometry(QtCore.QRect(1040, 60, 191, 51))
         self.label_4.setObjectName("label_4")
 
-
         self.label_5 = QtWidgets.QLabel(self.centralwidget)
-        self.label_5.setGeometry(QtCore.QRect(800, 170, 54, 12))
+        self.label_5.setGeometry(QtCore.QRect(950, 160, 54, 20))
         self.label_5.setObjectName("label_5")
-
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(80, 9, 331, 31))
         self.lineEdit.setObjectName("lineEdit")
         self.lineEdit.setEnabled(False)
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_2.setGeometry(QtCore.QRect(880, 170, 191, 41))
+        self.lineEdit_2.setGeometry(QtCore.QRect(1040, 150, 191, 41))
 
         self.lineEdit_2.setObjectName("lineEdit_2")
 
@@ -75,11 +85,7 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_3.setGeometry(QtCore.QRect(660, 10, 75, 31))
         self.pushButton_3.setObjectName("pushButton_3")
 
-
         self.pushButton_3.clicked.connect(self.button_recongnizer_click)
-
-
-
 
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
 
@@ -89,10 +95,7 @@ class Ui_MainWindow(QMainWindow):
 
         self.pushButton.clicked.connect(self.select_new_dir)
 
-
-
         self.timer_camera.timeout.connect(self.show_camera)
-
 
         self.timer_plate.timeout.connect(self.deal_pictures)
 
@@ -103,15 +106,10 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_2.clicked.connect(self.button_open_camera_click)
         # self.pushButton_2.clicked.connect(self.button_open_camera_click)
 
-        self.video_path=""
-
-
+        self.video_path = ""
 
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1110, 23))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
+
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
@@ -120,13 +118,13 @@ class Ui_MainWindow(QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
 
-
-
     def initPlateRecongizer(self):
         pred_model = model.construct_model("./model/ocr_plate_all_w_rnn_2.h5", )
         return pred_model
     def initYolo2(self):
-        options = {"model": "cfg/tiny-yolo-voc.cfg", "load": "model/tiny-yolo-voc.weights", "threshold": 0.1,
+        # options = {"model": "cfg/tiny-yolo-voc.cfg", "load": "model/tiny-yolo-voc.weights", "threshold": 0.1,
+        #            "gpu": 0.7}
+        options = {"model": "cfg/tiny-yolo-voc-truck.cfg", "load": "model/tiny-yolo-voc-truck_8000.weights", "threshold": 0.4,
                    "gpu": 0.7}
         tfnet = TFNet(options)
         return tfnet
@@ -152,7 +150,7 @@ class Ui_MainWindow(QMainWindow):
 
             # print(res_set)
 
-            show = cv2.resize(image, (640, 480))
+            show = cv2.resize(image, (924, 520))
 
             show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
             showImage = QtGui.QImage(show.data, show.shape[1], show.shape[0], QtGui.QImage.Format_RGB888)
@@ -168,8 +166,35 @@ class Ui_MainWindow(QMainWindow):
                 QtGui.QImage.Format_RGB888)
             self.label_4.setPixmap(
                 QtGui.QPixmap.fromImage(plate_img.rgbSwapped()))
+
             if len(res_set)!=0:
 
+                plate = res_set[0]
+                platenumber = plate["Name"]
+                x = plate["x"]
+                y = plate["y"]
+                w = plate["w"]
+                h = plate["h"]
+                cv2.rectangle(image, (x, y), (x + w, y + h), (55, 255, 155), 5)
+                # font = cv2.FONT_HERSHEY_SIMPLEX
+
+                img = Image.fromarray(image)
+                draw = ImageDraw.Draw(img)
+                # draw.text((int(rect[0]+1), int(rect[1]-16)), addText.decode("utf-8"), (255, 255, 255), font=fontC)
+                draw.text((x, y-10), platenumber, (255, 255, 255), font=fontC)
+                imagex = np.array(img)
+                # cv2.putText(image, platenumber, (x, y - 10), font, 1, (55, 255, 155), 2, cv2.LINE_AA)
+
+                cv2.imwrite('./cache/'+self.image_filename_list[self.platenum], imagex)
+                ftp_upload('./cache/'+self.image_filename_list[self.platenum],platenumber+'/'+self.image_filename_list[self.platenum])
+
+                if os.path.exists('./cache/'+self.image_filename_list[self.platenum]):
+                    # 删除文件，可使用以下两种方法。
+                    os.remove('./cache/'+self.image_filename_list[self.platenum])
+                    # os.unlink(my_file)
+                else:
+                    print('no such file!')
+                # 上传
                 self.lineEdit_2.setText(res_set[0]["Name"])
 
 
@@ -179,17 +204,16 @@ class Ui_MainWindow(QMainWindow):
             self.platenum += 1
         else:
             self.timer_plate.stop()
+            self.platenum = 0
 
 
     def button_recongnizer_click(self):
 
         if self.timer_plate.isActive()==False:
-            self.timer_plate.start(1000)
-
+            self.timer_plate.start(2000)
             self.imagefilepath = "./image"
             self.image_filename_list = []
             name_list = os.listdir(self.imagefilepath)  # 列出文件夹下所有的目录与文件
-            self.image_filename_list.clear()
             for i in range(0, len(name_list)):
                 if name_list[i].endswith(".jpg"):
                     self.image_filename_list.append(name_list[i])
@@ -218,32 +242,49 @@ class Ui_MainWindow(QMainWindow):
         # if face:
         #     pass
         if flag:
+            self.image = cv2.resize(self.image, (924, 520))
 
-            if self.number%15==0:
+            result = self.tfnet.return_predict(self.image)
+            carnum, carLocationList = getCarLoc(result)
 
-                result = self.tfnet.return_predict(self.image)
+            if carnum > 0:
 
-                carnum, carLocationList = getCarLoc(result)
-                if carnum > 0:
-                    print(carnum)
-                    currenttime = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(time.time()))
-                    cv2.imwrite('./image/' + currenttime + '.jpg', self.image)
+
+                currenttimes=0
+                topleft_x=0
+                topleft_y=0
+                bottomright_x=0
+                bottomright_y=0
+                    # cv2.imwrite('./image/' + currenttime + '.jpg', self.image)
                 for item in carLocationList:
-                    cv2.rectangle(self.image, item["topleft"], item["bottomright"], (55, 255, 155), 5)
+                    topleft_x = item["topleft"][0]
+                    topleft_y = item["topleft"][1]
+                    bottomright_x = item["bottomright"][0]
+                    bottomright_y = item["bottomright"][1]
+                    currenttimes = (bottomright_x - topleft_x)/(bottomright_y - topleft_y)
+                    cv2.rectangle(self.image, item["topleft"], item["bottomright"], (0, 0, 255), 5)
+
                 #     # 上传文件到服务器
                 #     # cv2.imshow("capture", self.image)
                 #     cv2.imwrite('./image/' + str(self.number) + '.jpg', self.image)
+
+
+
+                if self.number%20==0 and currenttimes<2 and topleft_x >= 40 and topleft_y >= 0 and bottomright_x <= 700 and bottomright_y <= 400 :
+                    currenttime = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(time.time()))
+                    cv2.imwrite('./image/' + currenttime + '.jpg', self.image)
                     # cv2.imwrite('C:/Users/chezh/Documents/GitHub/Dump-truck-recognition/image/' + str(c) + '.jpg', frame)
             # print(getCarLoc(result))
             # print("目标检测")
         # print("here!!")
-            show = cv2.resize(self.image, (640, 480))
-            show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
+        #     show = cv2.resize(self.image, (804, 452))
+            show = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
             showImage = QtGui.QImage(show.data, show.shape[1], show.shape[0], QtGui.QImage.Format_RGB888)
             self.label_2.setPixmap(QtGui.QPixmap.fromImage(showImage))
             self.number += 1
         else:
             self.timer_camera.stop()
+
 
 
 

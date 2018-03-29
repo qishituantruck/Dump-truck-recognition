@@ -52,14 +52,14 @@ def RecognizePlateDict(image,model):
         print(image_rgb.shape)
         # cv2.imshow("image_rgb",image_rgb)
         # print time.time() - t1,"校正"
-        print("e2e:",e2e.recognizeOne(image_rgb,model)[0])
+        # print("e2e:",e2e.recognizeOne(image_rgb,model)[0])
         image_gray = cv2.cvtColor(image_rgb,cv2.COLOR_BGR2GRAY)
 
         # cv2.imwrite("./"+str(j)+".jpg",image_gray)
         # image_gray = horizontalSegmentation(image_gray)
 
 
-        res, confidence = e2e.recognizeOne(image_rgb,model)
+        # res, confidence = e2e.recognizeOne(image_rgb,model)
         res_json = {}
         if confidence  > 0.6:
             res_json["Name"] = res

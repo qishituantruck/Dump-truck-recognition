@@ -1,5 +1,4 @@
 
-
 def getCarLoc(result):
     carnum=0
     carLocList=[]

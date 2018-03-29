@@ -11,7 +11,7 @@ from hyperlpr import e2emodel as model
 
 if __name__=="__main__":
     pred_model = model.construct_model("./model/ocr_plate_all_w_rnn_2.h5", )
-    path = "./image/10.jpg"
+    path = "./image/2018-03-28-09-17-48.jpg"
     image=cv2.imread(path)
     # ftp_upload(path, "test.jpg")
     image,result=pp.RecognizePlateDict(image,pred_model)
