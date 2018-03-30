@@ -12,3 +12,12 @@ def getCarLoc(result):
             dict["bottomright"] = (item["bottomright"]["x"], item["bottomright"]["y"])
             carLocList.append(dict)
     return carnum,carLocList
+def getproperplatenum(res_set):
+    propernum=''
+    dividenumscore=res_set[0][1]
+    e2enumscore=res_set[0][5]
+    if dividenumscore>e2enumscore:
+        propernum=res_set[0][0]
+    else:
+        propernum=res_set[0][4]
+    return propernum

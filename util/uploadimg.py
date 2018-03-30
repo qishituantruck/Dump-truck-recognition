@@ -44,4 +44,4 @@ def ftp_upload(filename, save_filename):
     print ("本地文件 ", filename, " 成功上传至 ", save_filename)
 
 	
-# ftp_upload('./cache/2018-03-29-09-15-52.jpg',u'苏'+'A8U7J1/2018-03-29-09-15-52.jpg')
+# ftp_upload('./cache/2018-03-30-08-27-29.jpg',u'苏'+'A8U7J1/2018-03-29-09-15-52.jpg')

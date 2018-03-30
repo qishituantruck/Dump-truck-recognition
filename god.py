@@ -10,8 +10,9 @@ from PIL import Image
 from PIL import ImageDraw
 from hyperlpr import pipline as pp
 import numpy as np
+import numpy
 import time
-from util.CarLocation import getCarLoc
+from util.CarLocation import getCarLoc,getproperplatenum
 from util.uploadimg import ftp_upload
 
 from hyperlpr import e2emodel as model
@@ -56,7 +57,7 @@ class Ui_MainWindow(QMainWindow):
 
 
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.label_3.setGeometry(QtCore.QRect(950, 70, 54, 12))
+        self.label_3.setGeometry(QtCore.QRect(970, 70, 54, 12))
         self.label_3.setObjectName("label_3")
 
         # 显示车牌图
@@ -65,7 +66,7 @@ class Ui_MainWindow(QMainWindow):
         self.label_4.setObjectName("label_4")
 
         self.label_5 = QtWidgets.QLabel(self.centralwidget)
-        self.label_5.setGeometry(QtCore.QRect(950, 160, 54, 20))
+        self.label_5.setGeometry(QtCore.QRect(970, 310, 54, 20))
         self.label_5.setObjectName("label_5")
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
@@ -73,7 +74,7 @@ class Ui_MainWindow(QMainWindow):
         self.lineEdit.setObjectName("lineEdit")
         self.lineEdit.setEnabled(False)
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_2.setGeometry(QtCore.QRect(1040, 150, 191, 41))
+        self.lineEdit_2.setGeometry(QtCore.QRect(1040, 300, 191, 41))
 
         self.lineEdit_2.setObjectName("lineEdit_2")
 
@@ -105,6 +106,16 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(self.button_open_camera_click)
         # self.pushButton_2.clicked.connect(self.button_open_camera_click)
+
+        self.label_6 = QtWidgets.QLabel(self.centralwidget)
+        self.label_6.setGeometry(QtCore.QRect(970, 200, 54, 12))
+        self.label_6.setObjectName("label_6")
+
+        self.label_7 = QtWidgets.QLabel(self.centralwidget)
+        self.label_7.setGeometry(QtCore.QRect(1040, 190, 191, 51))
+
+        self.label_7.setObjectName("label_7")
+
 
         self.video_path = ""
 
@@ -140,68 +151,163 @@ class Ui_MainWindow(QMainWindow):
         # print(filepath)
 
     def deal_pictures(self):
-        print("处理图片！！")
+
+
         if self.platenum<len(self.image_filename_list):
             print(self.platenum)
             path = self.imagefilepath + "/" + self.image_filename_list[self.platenum]
             print("路径：" + path)
-            image = cv2.imdecode(np.fromfile(path, dtype=np.uint8), -1)
-            image_rgb, res_set = pp.RecognizePlateDict(image, self.plateRecong)
+            showimage=cv2.imread(path)
+            fullimage = cv2.imdecode(np.fromfile(path, dtype=np.uint8), -1)
 
-            # print(res_set)
+            image, res_set = pp.SimpleRecognizePlateWithGui(fullimage, self.plateRecong)
 
-            show = cv2.resize(image, (924, 520))
-
-            show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
-            showImage = QtGui.QImage(show.data, show.shape[1], show.shape[0], QtGui.QImage.Format_RGB888)
-            self.label_2.setPixmap(QtGui.QPixmap.fromImage(showImage))
-
-            image_rgb = cv2.resize(image_rgb, (191, 51))
-            plate_img = QtGui.QImage(
-                image_rgb.data,
-                image_rgb.shape[1],
-                image_rgb.shape[0],
-                image_rgb.shape[1] *
-                image_rgb.shape[2],
+            print(res_set)
+            img = QtGui.QImage(
+                showimage.data,
+                showimage.shape[1],
+                showimage.shape[0],
+                showimage.shape[1] *
+                showimage.shape[2],
                 QtGui.QImage.Format_RGB888)
-            self.label_4.setPixmap(
-                QtGui.QPixmap.fromImage(plate_img.rgbSwapped()))
+            self.label_2.setPixmap(QtGui.QPixmap.fromImage(img.rgbSwapped()))
 
-            if len(res_set)!=0:
+            if len(res_set) > 0:
 
-                plate = res_set[0]
-                platenumber = plate["Name"]
-                x = plate["x"]
-                y = plate["y"]
-                w = plate["w"]
-                h = plate["h"]
-                cv2.rectangle(image, (x, y), (x + w, y + h), (55, 255, 155), 5)
-                # font = cv2.FONT_HERSHEY_SIMPLEX
+                curr_rect = res_set[0][2]
+                image_crop = image[int(curr_rect[1]):int(
+                    curr_rect[1] + curr_rect[3]), int(curr_rect[0]):int(curr_rect[0] + curr_rect[2])]
+                curr_plate = cv2.resize(image_crop, (136, 72))
+                plate_img = QtGui.QImage(
+                    curr_plate.data,
+                    curr_plate.shape[1],
+                    curr_plate.shape[0],
+                    curr_plate.shape[1] *
+                    curr_plate.shape[2],
+                    QtGui.QImage.Format_RGB888)
+                self.label_4.setPixmap(
+                    QtGui.QPixmap.fromImage(plate_img.rgbSwapped()))
 
-                img = Image.fromarray(image)
-                draw = ImageDraw.Draw(img)
-                # draw.text((int(rect[0]+1), int(rect[1]-16)), addText.decode("utf-8"), (255, 255, 255), font=fontC)
-                draw.text((x, y-10), platenumber, (255, 255, 255), font=fontC)
-                imagex = np.array(img)
-                # cv2.putText(image, platenumber, (x, y - 10), font, 1, (55, 255, 155), 2, cv2.LINE_AA)
-
-                cv2.imwrite('./cache/'+self.image_filename_list[self.platenum], imagex)
-                ftp_upload('./cache/'+self.image_filename_list[self.platenum],platenumber+'/'+self.image_filename_list[self.platenum])
-
-                if os.path.exists('./cache/'+self.image_filename_list[self.platenum]):
-                    # 删除文件，可使用以下两种方法。
-                    os.remove('./cache/'+self.image_filename_list[self.platenum])
-                    # os.unlink(my_file)
-                else:
-                    print('no such file!')
-                # 上传
-                self.lineEdit_2.setText(res_set[0]["Name"])
-
-
-
+                # print(res_set[0][6])
+                block_crop = image[0:24, 0:(24 * int(res_set[0][6]))]
+                curr_block = cv2.resize(
+                    block_crop, (24 * int(res_set[0][6]), 24))
+                block_image = QtGui.QImage(
+                    curr_block.data,
+                    curr_block.shape[1],
+                    curr_block.shape[0],
+                    curr_block.shape[1] *
+                    curr_block.shape[2],
+                    QtGui.QImage.Format_RGB888)
+                self.label_7.setPixmap(
+                    QtGui.QPixmap.fromImage(block_image.rgbSwapped()))
+                platenum=getproperplatenum(res_set)
+                self.lineEdit_2.setText(platenum)
+                print("开始上传服务器！")
+                ftp_upload('./image/'+self.image_filename_list[self.platenum],platenum+'/'+self.image_filename_list[self.platenum])
+                # if os.path.exists('./image/'+self.image_filename_list[self.platenum]):
+                #
+                #     os.remove('./image/'+self.image_filename_list[self.platenum])
+                #         # os.unlink(my_file)
+                # else:
+                #     print('no such file!')
             else:
+                print("未检测到！")
+                randomByteArray = bytearray(os.urandom(14688))
+                # 把数组赋值给OpenCV类型矩阵
+                flatNumpyArray = numpy.array(randomByteArray)
+
+                # 矩阵变维, 1维变维2维(灰度), 1维变为3维(彩色)
+
+                image_rgb = flatNumpyArray.reshape(36, 136, 3)
+
+                curr_plate = cv2.resize(image_rgb, (136, 72))
+                plate_img = QtGui.QImage(
+                    curr_plate.data,
+                    curr_plate.shape[1],
+                    curr_plate.shape[0],
+                    curr_plate.shape[1] *
+                    curr_plate.shape[2],
+                    QtGui.QImage.Format_RGB888)
+                self.label_4.setPixmap(
+                    QtGui.QPixmap.fromImage(plate_img.rgbSwapped()))
+
+                # print(res_set[0][6])
+                print("here!")
+                curr_block = cv2.resize(
+                    image_rgb, (136, 72))
+                block_image = QtGui.QImage(
+                    curr_block.data,
+                    curr_block.shape[1],
+                    curr_block.shape[0],
+                    curr_block.shape[1] *
+                    curr_block.shape[2],
+                    QtGui.QImage.Format_RGB888)
+                self.label_7.setPixmap(
+                    QtGui.QPixmap.fromImage(block_image.rgbSwapped()))
                 self.lineEdit_2.setText("未检测到！")
+
+                # self.license_plate_widget.clear()
+                # self.block_plate_widget.clear()
+                # self.segmentation_recognition_edit.setText("")
+                # self.filename_edit.setText("")
+                # self.confidence_edit.setText("")
+                # self.plate_color_edit.setText("")
+                # self.e2e_recognization_edit.setText("")
+                # self.e2e_confidence_edit.setText("")
+
+            # show = cv2.resize(image, (924, 520))
+            #
+            # show = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
+            # showImage = QtGui.QImage(show.data, show.shape[1], show.shape[0], QtGui.QImage.Format_RGB888)
+            # self.label_2.setPixmap(QtGui.QPixmap.fromImage(showImage))
+            #
+            # image_rgb = cv2.resize(image_rgb, (191, 51))
+            # plate_img = QtGui.QImage(
+            #     image_rgb.data,
+            #     image_rgb.shape[1],
+            #     image_rgb.shape[0],
+            #     image_rgb.shape[1] *
+            #     image_rgb.shape[2],
+            #     QtGui.QImage.Format_RGB888)
+            # self.label_4.setPixmap(
+            #     QtGui.QPixmap.fromImage(plate_img.rgbSwapped()))
+
+            # if len(res_set)!=0:
+            #
+            #     plate = res_set[0]
+            #     platenumber = plate["Name"]
+            #     x = plate["x"]
+            #     y = plate["y"]
+            #     w = plate["w"]
+            #     h = plate["h"]
+            #     cv2.rectangle(image, (x, y), (x + w, y + h), (55, 255, 155), 5)
+            #     # font = cv2.FONT_HERSHEY_SIMPLEX
+            #
+            #     img = Image.fromarray(image)
+            #     draw = ImageDraw.Draw(img)
+            #     # draw.text((int(rect[0]+1), int(rect[1]-16)), addText.decode("utf-8"), (255, 255, 255), font=fontC)
+            #     draw.text((x, y-10), platenumber, (255, 255, 255), font=fontC)
+            #     imagex = np.array(img)
+            #     # cv2.putText(image, platenumber, (x, y - 10), font, 1, (55, 255, 155), 2, cv2.LINE_AA)
+
+            #     cv2.imwrite('./cache/'+self.image_filename_list[self.platenum], imagex)
+            #     ftp_upload('./cache/'+self.image_filename_list[self.platenum],platenumber+'/'+self.image_filename_list[self.platenum])
+            #
+            #     if os.path.exists('./cache/'+self.image_filename_list[self.platenum]):
+            #         # 删除文件，可使用以下两种方法。
+            #         os.remove('./cache/'+self.image_filename_list[self.platenum])
+            #         # os.unlink(my_file)
+            #     else:
+            #         print('no such file!')
+            #     # 上传
+            #     self.lineEdit_2.setText(res_set[0]["Name"])
+            # else:
+            #     self.lineEdit_2.setText("未检测到！")
+
+
             self.platenum += 1
+
         else:
             self.timer_plate.stop()
             self.platenum = 0
@@ -210,7 +316,7 @@ class Ui_MainWindow(QMainWindow):
     def button_recongnizer_click(self):
 
         if self.timer_plate.isActive()==False:
-            self.timer_plate.start(2000)
+            self.timer_plate.start(1000)
             self.imagefilepath = "./image"
             self.image_filename_list = []
             name_list = os.listdir(self.imagefilepath)  # 列出文件夹下所有的目录与文件
@@ -248,8 +354,6 @@ class Ui_MainWindow(QMainWindow):
             carnum, carLocationList = getCarLoc(result)
 
             if carnum > 0:
-
-
                 currenttimes=0
                 topleft_x=0
                 topleft_y=0
@@ -270,7 +374,8 @@ class Ui_MainWindow(QMainWindow):
 
 
 
-                if self.number%20==0 and currenttimes<2 and topleft_x >= 40 and topleft_y >= 0 and bottomright_x <= 700 and bottomright_y <= 400 :
+                # if self.number%15==0 and currenttimes<2 and topleft_x >= 40 and topleft_y >= 0 and bottomright_x <= 700 and bottomright_y <= 400 :
+                if self.number % 15 == 0 and currenttimes<2 and topleft_x>=10 and bottomright_y<450:
                     currenttime = time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(time.time()))
                     cv2.imwrite('./image/' + currenttime + '.jpg', self.image)
                     # cv2.imwrite('C:/Users/chezh/Documents/GitHub/Dump-truck-recognition/image/' + str(c) + '.jpg', frame)
@@ -286,39 +391,16 @@ class Ui_MainWindow(QMainWindow):
             self.timer_camera.stop()
 
 
-
-
-    def closeEvent(self, event):
-        print("关闭！！")
-        ok = QtWidgets.QPushButton()
-        cacel = QtWidgets.QPushButton()
-
-        msg = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, u"关闭", u"是否关闭！")
-
-        msg.addButton(ok,QtWidgets.QMessageBox.ActionRole)
-        msg.addButton(cacel, QtWidgets.QMessageBox.RejectRole)
-        ok.setText(u'确定')
-        cacel.setText(u'取消')
-        # msg.setDetailedText('sdfsdff')
-        if msg.exec_() == QtWidgets.QMessageBox.RejectRole:
-            event.ignore()
-        else:
-            #             self.socket_client.send_command(self.socket_client.current_user_command)
-            if self.cap.isOpened():
-                self.cap.release()
-            if self.timer_camera.isActive():
-                self.timer_camera.stop()
-            event.accept()
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "视频目录："))
         self.pushButton.setText(_translate("MainWindow", "选择新的视频"))
         self.pushButton_2.setText(_translate("MainWindow", "开始检测"))
-        self.label_3.setText(_translate("MainWindow", "车牌图片："))
-        # self.label_4.setText(_translate("MainWindow", "TextLabel"))
+        self.label_3.setText(_translate("MainWindow", "粗定位："))
         self.label_5.setText(_translate("MainWindow", "识别结果："))
         self.pushButton_3.setText(_translate("MainWindow", "批量识别"))
+        self.label_6.setText(_translate("MainWindow", "精定位："))
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     MainWindow = QMainWindow()
